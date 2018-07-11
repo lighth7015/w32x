@@ -29,6 +29,8 @@
 #include <stdlib.h>
 
 #include <windows.h>
+#include "event_log.h"
+#include "w32x_priv.h"
 
 #ifndef max
 #define max(a,b) ((a)>(b)?(a):(b))
@@ -224,4 +226,16 @@ SubtractRect(RECT *dst, const RECT *r1, const RECT *r2)
 	}
 	*dst = ret;
 	return TRUE;
+}
+
+BOOL 
+GetRect(HWND hWnd, LPRECT r)
+{	
+	if (IsWindow(hWnd))
+	{
+		*r = hWnd->rectClient;
+		return TRUE;
+	}
+	
+	return FALSE;
 }

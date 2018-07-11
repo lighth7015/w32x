@@ -6,10 +6,10 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ *		notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ *		notice, this list of conditions and the following disclaimer in the
+ *		documentation and/or other materials provided with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -32,50 +32,43 @@
 static int
 MainWindowProc(HWND wnd, unsigned int msg, WPARAM wParam, LPARAM lParam)
 {
-  return DefWindowProc(wnd, msg, wParam, lParam);
+	return DefWindowProc(wnd, msg, wParam, lParam);
 }
 
-int
-main(int argc, char *argv[])
+int 
+WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR pCmdLine, int nCmdShow)
 {
-  HWND top;
-  WNDCLASS myClass;
-  MSG msg;
-  BOOL bRet;
-  HMENU menu;
+	WNDCLASS myClass;
+	BOOL bRet; MSG msg;
+	
+	myClass.Name = "TopWindow";
+	myClass.BackgroundColor = C_GRAY2;
+	myClass.wndExtra = 0;
+	myClass.EventProc = MainWindowProc;
+	RegisterClass(&myClass);
 
-  /* Open display */
-  if (w32x_init(NULL) != 0) {
-    fprintf(stderr, "Cannot open display.\n");
-    exit(1);
-  }
+	HMENU menu = CreateMenu();
 
-  myClass.Name = "TopWindow";
-  myClass.BackgroundColor = C_GRAY2;
-  myClass.wndExtra = 0;
-  myClass.EventProc = MainWindowProc;
-  RegisterClass(&myClass);
+	/* parent window */
+	HWND top = CreateWindowEx(WS_EX_CLIENTEDGE, "TopWindow", "Test1",
+							  WS_OVERLAPPEDWINDOW, 200, 200, 500, 300, 
+							  NULL, menu);
+	
+	CreateWindow("RadioButton", "Radio 1", WS_CHILD | WS_BORDER, 5, 30,
+			100, 25, top, NULL);
+	
+	CreateWindow("RadioButton", "Radio 2", WS_CHILD | WS_BORDER, 5, 60,
+			100, 25, top, NULL);
+	
+	ShowWindow(top);
+	UpdateWindow(top);
 
-  menu = CreateMenu();
+	for (bRet = GetMessage(&msg, NULL) 
+		;bRet != 0
+		;bRet = GetMessage(&msg, NULL)) 
+	{
+		DispatchMessage(&msg);
+	}
 
-  /* parent window */
-  top = CreateWindowEx(WS_EX_CLIENTEDGE, "TopWindow", "Test1",
-      WS_OVERLAPPEDWINDOW, 200, 200, 500, 300, NULL, menu);
-
-  CreateWindow("#32768", "Nothing", WS_CHILD, 0, 0, 500,
-      GetSystemMetrics(SM_CYMENU), top, NULL);
-
-  CreateWindow("RadioButton", "Radio 1", WS_CHILD | WS_BORDER, 5, 30,
-      100, 25, top, NULL);
-  CreateWindow("RadioButton", "Radio 2", WS_CHILD | WS_BORDER, 5, 60,
-      100, 25, top, NULL);
-
-  ShowWindow(top);
-  UpdateWindow(top);
-
-  while ((bRet = GetMessage(&msg, NULL)) != 0) {
-    DispatchMessage(&msg);
-  }
-
-  return 0;
+	return 0;
 }
